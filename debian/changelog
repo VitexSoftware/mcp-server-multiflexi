@@ -1,3 +1,11 @@
+multiflexi-mcp-server (0.3.2-1) unstable; urgency=medium
+
+  * Add companion package mcprack-mcp-server-multiflexi: registers
+    multiflexi-mcp-server into the local mcprack MCP catalog on install
+    (postinst) and unregisters it on removal (prerm).
+
+ -- vitex <info@vitexsoftware.cz>  Thu, 27 Aug 2026 11:13:01 +0200
+
 multiflexi-mcp-server (0.3.1-1) unstable; urgency=medium
 
   * Revert 0.3.0's MULTIFLEXI_HOST/USERNAME/PASSWORD defaults
