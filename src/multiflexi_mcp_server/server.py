@@ -23,6 +23,7 @@ from mcp_types import (
     ReadResourceResult,
     Resource,
     Tool,
+    ToolAnnotations,
     TextContent,
     TextResourceContents,
     ImageContent,
@@ -60,6 +61,37 @@ MUTATING_TOOLS = {
     "set_event_rule",
     "delete_event_rule",
 }
+
+# Reusable ToolAnnotations for list_tools(). All tools talk to the external
+# MultiFlexi REST API, so open_world_hint is always True.
+READ_ONLY_ANNOTATIONS = ToolAnnotations(
+    read_only_hint=True,
+    destructive_hint=False,
+    idempotent_hint=True,
+    open_world_hint=True,
+)
+# Creates a new resource each call (job / export request) - not idempotent.
+CREATE_ANNOTATIONS = ToolAnnotations(
+    read_only_hint=False,
+    destructive_hint=False,
+    idempotent_hint=False,
+    open_world_hint=True,
+)
+# Additive grant that has no further effect once applied a second time.
+ASSIGN_ANNOTATIONS = ToolAnnotations(
+    read_only_hint=False,
+    destructive_hint=False,
+    idempotent_hint=True,
+    open_world_hint=True,
+)
+# Full-replace update/delete: overwrites or removes prior state, but repeating
+# the same call yields the same end state.
+MUTATE_ANNOTATIONS = ToolAnnotations(
+    read_only_hint=False,
+    destructive_hint=True,
+    idempotent_hint=True,
+    open_world_hint=True,
+)
 
 
 async def list_resources() -> List[Resource]:
@@ -200,6 +232,7 @@ async def list_tools() -> List[Tool]:
     return [
         Tool(
             name="get_app",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get a specific MultiFlexi application by ID",
             inputSchema={
                 "type": "object",
@@ -219,6 +252,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_job",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get a specific MultiFlexi job by ID",
             inputSchema={
                 "type": "object",
@@ -238,6 +272,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="create_job",
+            annotations=CREATE_ANNOTATIONS,
             description="Schedule a job from a RunTemplate (mirrors 'run-template:schedule')",
             inputSchema={
                 "type": "object",
@@ -266,6 +301,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_job_status",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get the status of a MultiFlexi job",
             inputSchema={
                 "type": "object",
@@ -280,6 +316,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_company",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get a specific MultiFlexi company by ID",
             inputSchema={
                 "type": "object",
@@ -299,6 +336,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_user",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get a specific MultiFlexi user by ID",
             inputSchema={
                 "type": "object",
@@ -318,6 +356,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_runtemplate",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get a specific MultiFlexi run template by ID",
             inputSchema={
                 "type": "object",
@@ -337,6 +376,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_runtemplate",
+            annotations=MUTATE_ANNOTATIONS,
             description="Update a MultiFlexi run template",
             inputSchema={
                 "type": "object",
@@ -373,6 +413,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="request_data_export",
+            annotations=CREATE_ANNOTATIONS,
             description="Request GDPR data export for a user",
             inputSchema={
                 "type": "object",
@@ -394,6 +435,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_export_status",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get the status of a data export request",
             inputSchema={
                 "type": "object",
@@ -409,6 +451,7 @@ async def list_tools() -> List[Tool]:
         # Company
         Tool(
             name="list_companies",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="List all MultiFlexi companies",
             inputSchema={
                 "type": "object",
@@ -421,6 +464,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="list_company_users",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="List users assigned to a company",
             inputSchema={
                 "type": "object",
@@ -433,6 +477,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="assign_user_to_company",
+            annotations=ASSIGN_ANNOTATIONS,
             description="Assign a user to a company with an access role",
             inputSchema={
                 "type": "object",
@@ -450,6 +495,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="unassign_user_from_company",
+            annotations=MUTATE_ANNOTATIONS,
             description="Remove a user's assignment from a company",
             inputSchema={
                 "type": "object",
@@ -463,6 +509,7 @@ async def list_tools() -> List[Tool]:
         # User / roles
         Tool(
             name="list_users",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="List all MultiFlexi users",
             inputSchema={
                 "type": "object",
@@ -473,6 +520,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_user_roles",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get the RBAC roles assigned to a user",
             inputSchema={
                 "type": "object",
@@ -484,6 +532,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="set_user_roles",
+            annotations=MUTATE_ANNOTATIONS,
             description="Assign RBAC roles to a user",
             inputSchema={
                 "type": "object",
@@ -506,6 +555,7 @@ async def list_tools() -> List[Tool]:
         # Credential / CredentialType
         Tool(
             name="list_credentials",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="List all credentials visible to the authenticated user",
             inputSchema={
                 "type": "object",
@@ -516,6 +566,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_credential",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get a credential by ID",
             inputSchema={
                 "type": "object",
@@ -527,6 +578,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_credential",
+            annotations=MUTATE_ANNOTATIONS,
             description="Update a credential by ID",
             inputSchema={
                 "type": "object",
@@ -548,6 +600,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="list_credential_types",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="List all credential types",
             inputSchema={
                 "type": "object",
@@ -558,6 +611,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_credential_type",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get a credential type by ID",
             inputSchema={
                 "type": "object",
@@ -569,6 +623,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_credential_type",
+            annotations=MUTATE_ANNOTATIONS,
             description="Update a credential type by ID",
             inputSchema={
                 "type": "object",
@@ -591,6 +646,7 @@ async def list_tools() -> List[Tool]:
         # Topic
         Tool(
             name="list_topics",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="List all topics (capability contracts required by apps / provided by credentials)",
             inputSchema={
                 "type": "object",
@@ -601,6 +657,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_topic",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get a topic by ID",
             inputSchema={
                 "type": "object",
@@ -612,6 +669,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="update_topic",
+            annotations=MUTATE_ANNOTATIONS,
             description="Update a topic by ID",
             inputSchema={
                 "type": "object",
@@ -632,6 +690,7 @@ async def list_tools() -> List[Tool]:
         # EventSource
         Tool(
             name="list_event_sources",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="List all event sources (webhook adapters feeding EventRules)",
             inputSchema={
                 "type": "object",
@@ -642,6 +701,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_event_source",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get an event source by ID",
             inputSchema={
                 "type": "object",
@@ -653,6 +713,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="set_event_source",
+            annotations=MUTATE_ANNOTATIONS,
             description="Create or update an event source (omit event_source_id to create)",
             inputSchema={
                 "type": "object",
@@ -673,6 +734,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="delete_event_source",
+            annotations=MUTATE_ANNOTATIONS,
             description="Delete an event source by ID",
             inputSchema={
                 "type": "object",
@@ -684,6 +746,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="test_event_source_connection",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Live-test connectivity/credentials for an event source",
             inputSchema={
                 "type": "object",
@@ -696,6 +759,7 @@ async def list_tools() -> List[Tool]:
         # EventRule
         Tool(
             name="list_event_rules",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="List all event rules (bindings from EventSource changes to RunTemplate triggers)",
             inputSchema={
                 "type": "object",
@@ -706,6 +770,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_event_rule",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get an event rule by ID",
             inputSchema={
                 "type": "object",
@@ -717,6 +782,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="set_event_rule",
+            annotations=MUTATE_ANNOTATIONS,
             description="Create or update an event rule (omit event_rule_id to create)",
             inputSchema={
                 "type": "object",
@@ -735,6 +801,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="delete_event_rule",
+            annotations=MUTATE_ANNOTATIONS,
             description="Delete an event rule by ID",
             inputSchema={
                 "type": "object",
@@ -747,6 +814,7 @@ async def list_tools() -> List[Tool]:
         # Task
         Tool(
             name="list_tasks",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="List tasks (per-window fulfilment obligations spawned from RunTemplates)",
             inputSchema={
                 "type": "object",
@@ -763,6 +831,7 @@ async def list_tools() -> List[Tool]:
         ),
         Tool(
             name="get_task",
+            annotations=READ_ONLY_ANNOTATIONS,
             description="Get a task by ID, including its job attempt history",
             inputSchema={
                 "type": "object",

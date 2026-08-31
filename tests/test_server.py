@@ -133,7 +133,23 @@ class TestMCPServer:
 
         for tool_name in expected_tools:
             assert tool_name in tool_names
-    
+
+    @pytest.mark.asyncio
+    async def test_list_tools_have_boolean_annotations(self):
+        """Every tool must declare the four MCP tool-annotation hints as
+        actual booleans (required by, e.g., OpenAI's tool directory)."""
+        tools = await list_tools()
+
+        for tool in tools:
+            assert tool.annotations is not None, f"{tool.name} has no annotations"
+            for hint in (
+                tool.annotations.read_only_hint,
+                tool.annotations.destructive_hint,
+                tool.annotations.idempotent_hint,
+                tool.annotations.open_world_hint,
+            ):
+                assert isinstance(hint, bool), f"{tool.name} has a non-boolean hint"
+
     @pytest.mark.asyncio
     @patch('multiflexi_mcp_server.server.client')
     async def test_call_tool_get_app(self, mock_client):
