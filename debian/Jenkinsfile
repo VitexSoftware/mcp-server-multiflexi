@@ -9,7 +9,7 @@
 
 String[] distributions = [
     'debian:trixie',
-    'debian:forky',
+    // 'debian:forky', // Disabled: debian:forky excluded until deps are available
 ]
 
 String vendor = 'vitexsoftware'
