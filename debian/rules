@@ -6,7 +6,7 @@ export PYBUILD_NAME=multiflexi_mcp_server
 	dh $@ --with python3 --buildsystem=pybuild
 
 override_dh_auto_install:
-	dh_auto_install --destdir=debian/multiflexi-mcp-server
+	dh_auto_install --destdir=debian/mcp-server-multiflexi
 
 override_dh_auto_test:
 	# Intentionally not run at build time: python3-mcp / python3-multiflexi /

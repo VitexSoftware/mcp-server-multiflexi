@@ -1,21 +1,23 @@
-Source: multiflexi-mcp-server
+Source: mcp-server-multiflexi
 Section: python
 Priority: optional
 Maintainer: "Vítězslav Dvořák" <info@vitexsoftware.cz>
 Build-Depends: debhelper-compat (= 13), dh-python, pybuild-plugin-pyproject, python3-all, python3-setuptools
 Standards-Version: 4.6.2
-Homepage: https://github.com/VitexSoftware/multiflexi-mcp-server
+Homepage: https://github.com/VitexSoftware/mcp-server-multiflexi
+Vcs-Git: https://github.com/VitexSoftware/mcp-server-multiflexi.git
+Vcs-Browser: https://github.com/VitexSoftware/mcp-server-multiflexi
 
-Package: multiflexi-mcp-server
+Package: mcp-server-multiflexi
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends},
  python3-mcp (>= 1:2.0.0~b2),
  python3-mcp-types,
  python3-multiflexi,
  python3-pydantic (>= 2),
-Provides: python3-multiflexi-mcp-server
-Replaces: python3-multiflexi-mcp-server (<< 0.1.0-2~)
-Breaks: python3-multiflexi-mcp-server (<< 0.1.0-2~)
+Provides: multiflexi-mcp-server, python3-multiflexi-mcp-server
+Replaces: multiflexi-mcp-server (<< 0.3.4~), python3-multiflexi-mcp-server (<< 0.3.4~)
+Breaks: multiflexi-mcp-server (<< 0.3.4~), python3-multiflexi-mcp-server (<< 0.3.4~)
 Description: MCP server for MultiFlexi API integration
  Model Context Protocol (MCP) server that exposes MultiFlexi job
  scheduler/middleware operations -- applications, jobs, companies, users,
@@ -26,8 +28,8 @@ Package: mcprack-mcp-server-multiflexi
 Architecture: all
 Depends: ${misc:Depends},
  mcprack (>= 1.5.1),
- multiflexi-mcp-server (= ${binary:Version}),
+ mcp-server-multiflexi (= ${binary:Version}),
 Description: Registers MultiFlexi MCP server into mcprack catalog
- Companion package for multiflexi-mcp-server. Installing it registers
+ Companion package for mcp-server-multiflexi. Installing it registers
  the multiflexi-mcp-server binary as an available MCP server in the
  local mcprack instance; removing it unregisters it again.

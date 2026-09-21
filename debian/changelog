@@ -1,3 +1,12 @@
+mcp-server-multiflexi (0.3.4-1) unstable; urgency=medium
+
+  * Rename package multiflexi-mcp-server → mcp-server-multiflexi
+    (Provides/Replaces/Breaks for multiflexi-mcp-server and
+    python3-multiflexi-mcp-server).
+  * Update companion Depends and Vcs URLs for the GitHub rename.
+
+ -- Vítězslav Dvořák <info@vitexsoftware.cz>  Mon, 21 Sep 2026 15:50:00 +0200
+
 multiflexi-mcp-server (0.3.3-1) unstable; urgency=medium
 
   * Always inject Authorization: Basic when credentials are configured

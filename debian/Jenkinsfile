@@ -2,7 +2,7 @@
 
 // Current version of this Pipeline https://github.com/VitexSoftware/BuildImages/blob/main/Test/Jenkinsfile-parael
 //
-// Restricted to debian:trixie only: multiflexi-mcp-server depends on
+// Restricted to debian:trixie only: mcp-server-multiflexi depends on
 // python3-mcp and python3-multiflexi (both only published for trixie on
 // repo.vitexsoftware.com) and python3-pydantic (>= 2), which older/other
 // distributions don't backport. Widen this list once those deps are.
@@ -83,7 +83,7 @@ distributions.each { distro ->
                         sh 'echo "INSTALATION"'
 
                         def installOrder = [
-                        'multiflexi-mcp-server',
+                        'mcp-server-multiflexi',
                         ]
 
                     def sorted_artifacts = artifacts.toList()

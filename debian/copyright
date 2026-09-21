@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: multiflexi-mcp-server
-Source: https://github.com/VitexSoftware/multiflexi-mcp-server
+Upstream-Name: mcp-server-multiflexi
+Source: https://github.com/VitexSoftware/mcp-server-multiflexi
 
 Files: *
 Copyright: 2026 MultiFlexi Team
