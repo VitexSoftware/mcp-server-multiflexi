@@ -1,3 +1,13 @@
+multiflexi-mcp-server (0.3.3-1) unstable; urgency=medium
+
+  * Always inject Authorization: Basic when credentials are configured
+    (covers older multiflexi-client builds with empty _auth_settings on
+    Credential/Topic paths).
+  * Add tests/live_capability_scenario.py and document live verification
+    against demo.multiflexi.eu / custom hosts.
+
+ -- vitex <info@vitexsoftware.cz>  Mon, 21 Sep 2026 08:30:36 +0200
+
 multiflexi-mcp-server (0.3.2-1) unstable; urgency=medium
 
   * Add companion package mcprack-mcp-server-multiflexi: registers

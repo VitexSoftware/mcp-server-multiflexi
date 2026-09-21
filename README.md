@@ -202,6 +202,15 @@ Requires a `multiflexi-client` build generated from the current
   `credential_id` that looks like a schema-authoring artifact on a
   session-authenticated endpoint; it's exposed but defaults to an empty
   string.
+- Credential / CredentialType / Topic operations in older `multiflexi-client`
+  builds omit `basicAuth` in `_auth_settings`. This server always injects an
+  `Authorization: Basic …` header when credentials are configured so those
+  endpoints still authenticate. Prefer a client regenerated from the current
+  `openapi-schema.yaml` (basicAuth on those paths, `Job.env` object|string,
+  longer credential names, free-form `EventRule.operation`).
+- Empty App `environment` / `exitCodes` and id-keyed list endpoints (`apps`,
+  `jobs`, …) require a matching API server build; older servers that emit JSON
+  arrays for those fields break generated clients.
 
 ### Example Tool Usage
 
@@ -263,6 +272,29 @@ pip install -e ".[dev]"
 ```bash
 pytest
 ```
+
+### Live capability scenario
+
+`tests/live_capability_scenario.py` exercises every MCP resource, read-only
+tool, prompt, and the read-only guard for mutating tools against a real
+MultiFlexi API. It reports whether each capability gets usable data back.
+
+```bash
+# Public demo (login demo/demo)
+python tests/live_capability_scenario.py \
+  --host https://demo.multiflexi.eu/api/VitexSoftware/MultiFlexi/1.0.0 \
+  --username demo --password demo \
+  --json-out /tmp/mcp-demo.json
+
+# Dev host (path prefix /multiflexi/api/...)
+python tests/live_capability_scenario.py \
+  --host https://vyvojar.spoje.net/multiflexi/api/VitexSoftware/MultiFlexi/1.0.0 \
+  --username "$MULTIFLEXI_USERNAME" --password "$MULTIFLEXI_PASSWORD" \
+  --json-out /tmp/mcp-vyvojar.json
+```
+
+Exit code is non-zero when any non-skipped check fails. Use `--json-out` for
+a machine-readable report.
 
 ### Code Formatting
 

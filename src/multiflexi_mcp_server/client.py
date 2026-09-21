@@ -56,11 +56,25 @@ class MultiFleXiClient:
     
     @contextmanager
     def get_api_client(self):
-        """Get configured MultiFlexi API client as context manager."""
+        """Get configured MultiFlexi API client as context manager.
+
+        Always inject a Basic ``Authorization`` header when credentials are
+        configured. Several generated API classes (Credential, CredentialType,
+        Topic, Default) ship with empty ``_auth_settings`` because the OpenAPI
+        schema omitted ``security: [basicAuth]`` on those operations -- without
+        this override those calls go out unauthenticated and the server returns
+        Apache's ``401 Basic realm="Protected"``.
+        """
+        import base64
         import multiflexi_client
 
         configuration = self.get_configuration()
         with multiflexi_client.ApiClient(configuration) as api_client:
+            if self.config.has_auth():
+                token = base64.b64encode(
+                    f"{self.config.username}:{self.config.password}".encode("utf-8")
+                ).decode("ascii")
+                api_client.set_default_header("Authorization", f"Basic {token}")
             yield api_client
     
     def format_response(self, response: Any) -> Any:
