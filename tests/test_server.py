@@ -7,6 +7,7 @@ from unittest.mock import Mock, patch, AsyncMock, MagicMock
 from mcp_types import TextContent
 
 import inspect
+from multiflexi_mcp_server import server as _server
 
 from multiflexi_mcp_server.server import (
     app,
@@ -178,7 +179,7 @@ class TestMCPServer:
         mock_client.create_job.assert_not_called()
 
     @pytest.mark.asyncio
-    @patch('multiflexi_mcp_server.server.config.read_only', False)
+    @patch.object(_server.config._resolve(), 'read_only', False)
     @patch('multiflexi_mcp_server.server.client')
     async def test_call_tool_create_job(self, mock_client):
         """Test create_job tool call."""
@@ -241,7 +242,7 @@ class TestMCPServer:
         mock_client.get_job_status.assert_called_once_with(1)
     
     @pytest.mark.asyncio
-    @patch('multiflexi_mcp_server.server.config.read_only', False)
+    @patch.object(_server.config._resolve(), 'read_only', False)
     @patch('multiflexi_mcp_server.server.client')
     async def test_call_tool_request_data_export(self, mock_client):
         """Test request_data_export tool call."""
@@ -271,7 +272,7 @@ class TestMCPServer:
         mock_client.list_companies.assert_called_once_with(limit=10, offset=None, order=None)
 
     @pytest.mark.asyncio
-    @patch('multiflexi_mcp_server.server.config.read_only', False)
+    @patch.object(_server.config._resolve(), 'read_only', False)
     @patch('multiflexi_mcp_server.server.client')
     async def test_call_tool_set_user_roles(self, mock_client):
         mock_client.set_user_roles.return_value = {"user_id": 1, "roles": ["admin"]}
@@ -283,7 +284,7 @@ class TestMCPServer:
         mock_client.set_user_roles.assert_called_once_with(1, ["admin"], False)
 
     @pytest.mark.asyncio
-    @patch('multiflexi_mcp_server.server.config.read_only', False)
+    @patch.object(_server.config._resolve(), 'read_only', False)
     @patch('multiflexi_mcp_server.server.client')
     async def test_call_tool_set_event_source_strips_id_from_payload(self, mock_client):
         """event_source_id must route to the id kwarg, not leak into the data dict."""

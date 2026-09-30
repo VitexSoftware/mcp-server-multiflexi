@@ -39,9 +39,38 @@ from .client import MultiFleXiClient
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Global configuration and client
-config = MultiFleXiConfig.from_env()
-client = MultiFleXiClient(config)
+
+
+class _Lazy:
+    """Defer building an object until first attribute access.
+
+    Importing this module must never fail on missing configuration: a backend
+    that crashes at import serves no tools at all (mcprack then reports an
+    empty ``tools/list``). Configuration errors instead surface as a clear
+    error when a tool is actually called.
+    """
+
+    def __init__(self, factory):
+        object.__setattr__(self, "_factory", factory)
+        object.__setattr__(self, "_obj", None)
+
+    def _resolve(self):
+        obj = object.__getattribute__(self, "_obj")
+        if obj is None:
+            obj = object.__getattribute__(self, "_factory")()
+            object.__setattr__(self, "_obj", obj)
+        return obj
+
+    def __getattr__(self, name):
+        return getattr(self._resolve(), name)
+
+    def __setattr__(self, name, value):
+        setattr(self._resolve(), name, value)
+
+
+# Global configuration and client (built lazily, see _Lazy)
+config = _Lazy(MultiFleXiConfig.from_env)
+client = _Lazy(lambda: MultiFleXiClient(config._resolve()))
 
 # Tools that create/modify/delete MultiFlexi state. Blocked when config.read_only
 # is true (the default) so the server never mutates data unless an operator
@@ -1168,10 +1197,16 @@ app = Server(
 
 async def run_server() -> None:
     """Run the MultiFlexi MCP Server over stdio."""
-    logger.info(f"Starting MultiFlexi MCP Server")
-    logger.info(f"Host: {config.host}")
-    logger.info(f"Authentication: {'enabled' if config.has_auth() else 'disabled'}")
-    logger.info(f"Read-only mode: {'enabled' if config.read_only else 'DISABLED (writes allowed)'}")
+    logger.info("Starting MultiFlexi MCP Server")
+    try:
+        logger.info(f"Host: {config.host}")
+        logger.info(f"Authentication: {'enabled' if config.has_auth() else 'disabled'}")
+        logger.info(f"Read-only mode: {'enabled' if config.read_only else 'DISABLED (writes allowed)'}")
+    except (RuntimeError, ValueError) as exc:
+        logger.warning(
+            "Configuration invalid (%s); serving tool list only, "
+            "tool calls will fail until it is fixed.", exc
+        )
 
     async with stdio_server() as (read_stream, write_stream):
         await app.run(

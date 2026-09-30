@@ -1,3 +1,14 @@
+mcp-server-multiflexi (0.3.5-1) unstable; urgency=medium
+
+  * Build configuration and API client lazily: importing the server no longer
+    raises when MULTIFLEXI_HOST is unset. Previously the backend crashed at
+    import, so mcprack (which registers the server with an empty env) got an
+    empty tools/list. initialize and tools/list now work; tool calls return a
+    clear "MULTIFLEXI_HOST is required" error until the env is configured.
+  * README: demo host needs the full /api/VitexSoftware/MultiFlexi/1.0.0 path.
+
+ -- Vítězslav Dvořák <info@vitexsoftware.cz>  Wed, 30 Sep 2026 14:45:00 +0200
+
 mcp-server-multiflexi (0.3.4-1) unstable; urgency=medium
 
   * Rename package multiflexi-mcp-server → mcp-server-multiflexi

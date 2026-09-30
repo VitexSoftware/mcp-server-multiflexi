@@ -63,3 +63,23 @@ def test_calling_a_client_method_does_import_multiflexi_client():
         "'multiflexi_client should be imported once a client method actually runs'\n"
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_import_without_host_does_not_fail_and_tools_list_works():
+    """A missing MULTIFLEXI_HOST must not stop the server serving tools/list."""
+    code = (
+        "import asyncio, json\n"
+        "from multiflexi_mcp_server import server\n"
+        "tools = asyncio.run(server.list_tools())\n"
+        "assert len(tools) > 0, 'no tools listed'\n"
+        "out = asyncio.run(server.call_tool('list_users', {}))\n"
+        "msg = json.loads(out[0].text)['message']\n"
+        "assert 'MULTIFLEXI_HOST is required' in msg, msg\n"
+        "print(len(tools))\n"
+    )
+    env = {k: v for k, v in os.environ.items() if not k.startswith("MULTIFLEXI_")}
+    env["PYTHONPATH"] = SRC
+    result = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True, env=env, timeout=30
+    )
+    assert result.returncode == 0, result.stderr

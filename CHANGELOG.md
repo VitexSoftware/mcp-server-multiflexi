@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Server crashed at import when `MULTIFLEXI_HOST` was unset, so hosts that
+  register it without env (mcprack) saw an empty `tools/list`. Config and
+  client are now built lazily: `initialize`/`tools/list` always work and tool
+  calls fail with a clear configuration error until the env is set.
+
 ### Planned
 - OAuth2 authentication support
 - Connection pooling for better performance

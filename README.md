@@ -44,8 +44,8 @@ The server can be configured using environment variables:
 
 ### Required Configuration
 
-- `MULTIFLEXI_HOST`: MultiFlexi API host URL. No default - the server refuses to
-  start without it. Must include the full API base path, e.g.
+- `MULTIFLEXI_HOST`: MultiFlexi API host URL. No default - without it the server still
+  starts and lists its tools, but every tool call returns a configuration error. Must include the full API base path, e.g.
   `https://your-instance.example.com/api/VitexSoftware/MultiFlexi/1.0.0`; the
   `/VitexSoftware/MultiFlexi/1.0.0` segment is required by the server's routing.
 
@@ -61,12 +61,12 @@ The server can be configured using environment variables:
   (create/update/set/delete/assign/unassign) are rejected before any API call
   is made. Set to `false` to allow writes.
 
-There is no zero-config default: the server always requires an explicit
+There is no zero-config default: tool calls always require an explicit
 `MULTIFLEXI_HOST` (and, unless your instance allows anonymous access,
 `MULTIFLEXI_USERNAME`/`MULTIFLEXI_PASSWORD`) so it never silently talks to an
 unintended backend. If you just want to try the server without your own
 MultiFlexi instance, VitexSoftware runs a public demo you can point at
-explicitly: `MULTIFLEXI_HOST=https://demo.multiflexi.eu/api` with
+explicitly: `MULTIFLEXI_HOST=https://demo.multiflexi.eu/api/VitexSoftware/MultiFlexi/1.0.0` with
 `MULTIFLEXI_USERNAME=demo` / `MULTIFLEXI_PASSWORD=demo`.
 
 ### Example Configuration
