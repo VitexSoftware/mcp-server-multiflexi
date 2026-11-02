@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="console-application">
+  <id>eu.multiflexi.mcp-server</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>MultiFlexi MCP Server</name>
+  <summary>MCP server for the MultiFlexi task scheduler</summary>
+  <description>
+    <p>MultiFlexi MCP Server is a Model Context Protocol server that lets AI assistants manage MultiFlexi companies, applications, run templates, jobs and credentials.</p>
+  </description>
+  <icon type="stock">eu.multiflexi.mcp-server</icon>
+  <pkgname>mcp-server-multiflexi</pkgname>
+  <provides>
+    <binary>mcp-server-multiflexi</binary>
+    <binary>multiflexi-mcp-server</binary>
+  </provides>
+  <categories>
+    <category>Utility</category>
+  </categories>
+  <url type="homepage">https://github.com/VitexSoftware/mcp-server-multiflexi</url>
+  <developer id="cz.vitexsoftware">
+    <name>VitexSoftware</name>
+  </developer>
+  <releases>
+    <release version="0.3.5" date="2026-09-30"/>
+  </releases>
+  <content_rating type="oars-1.1"/>
+</component>
