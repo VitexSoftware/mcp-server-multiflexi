@@ -27,7 +27,7 @@ Description: MCP server for MultiFlexi API integration
 Package: mcprack-mcp-server-multiflexi
 Architecture: all
 Depends: ${misc:Depends},
- mcprack (>= 1.5.1),
+ mcprack (>= 1.6.0),
  mcp-server-multiflexi (= ${binary:Version}),
 Description: Registers MultiFlexi MCP server into mcprack catalog
  Companion package for mcp-server-multiflexi. Installing it registers

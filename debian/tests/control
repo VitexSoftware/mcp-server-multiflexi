@@ -1,3 +1,7 @@
 Tests: unit
 Depends: @, python3-pytest, python3-pytest-asyncio
 Restrictions: allow-stderr
+
+Tests: smoke
+Depends: @, mcprack (>= 1.6.0)
+Restrictions: allow-stderr
