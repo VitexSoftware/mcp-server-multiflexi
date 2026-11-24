@@ -313,6 +313,10 @@ class TestMultiFleXiClientNewDomains:
         assert result == {"id": 7, "name": "FioToken"}
         mock_cred_api.get_credential.assert_called_once_with("", 7, "json")
 
+    @pytest.mark.skipif(
+        not hasattr(multiflexi_client, "UpdateCredentialsRequest"),
+        reason="needs python3-multiflexi >= 1.1.2",
+    )
     @patch('multiflexi_client.ApiClient')
     def test_update_credential(self, mock_api_client_class, client):
         mock_api_client_class.return_value.__enter__.return_value = MagicMock()
@@ -330,6 +334,10 @@ class TestMultiFleXiClientNewDomains:
         assert args[1] == 7
         assert args[3].name == "Renamed"
 
+    @pytest.mark.skipif(
+        not hasattr(multiflexi_client, "UpdateCredentialTypeRequest"),
+        reason="needs python3-multiflexi >= 1.1.2",
+    )
     @patch('multiflexi_client.ApiClient')
     def test_update_credential_type(self, mock_api_client_class, client):
         mock_api_client_class.return_value.__enter__.return_value = MagicMock()
@@ -346,6 +354,10 @@ class TestMultiFleXiClientNewDomains:
         assert args[0] == 3
         assert args[2].name == "FioBank"
 
+    @pytest.mark.skipif(
+        not hasattr(multiflexi_client, "UpdateTopicRequest"),
+        reason="needs python3-multiflexi >= 1.1.2",
+    )
     @patch('multiflexi_client.ApiClient')
     def test_update_topic(self, mock_api_client_class, client):
         mock_api_client_class.return_value.__enter__.return_value = MagicMock()
@@ -413,6 +425,11 @@ class TestMultiFleXiClientNewDomains:
             result = client.delete_event_rule(4)
 
         assert result == {"success": True, "event_rule_id": 4}
+
+    def test_format_response_omits_inline_images(self, client):
+        out = client.format_response([{"name": "A", "logo": "data:image/png;base64," + "x" * 1000}])
+        assert out[0]["name"] == "A"
+        assert out[0]["logo"].startswith("[data URI omitted")
 
     @patch('multiflexi_client.ApiClient')
     def test_list_jobs_filters_pages_and_strips_large_fields(self, mock_api_client_class, client):

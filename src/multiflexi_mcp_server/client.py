@@ -77,6 +77,9 @@ class MultiFleXiClient:
                 api_client.set_default_header("Authorization", f"Basic {token}")
             yield api_client
     
+    # Inline images (company/application logos) longer than this are left out of results.
+    MAX_DATA_URI = 256
+
     def format_response(self, response: Any) -> Any:
         """Recursively convert an API response into JSON-serializable data.
 
@@ -88,6 +91,8 @@ class MultiFleXiClient:
         real JSON -- e.g. ``list_companies()`` came back as
         ``{"response": "[Company(id=1, ...), Company(id=2, ...)]"}``.
         """
+        if isinstance(response, str) and response.startswith("data:") and len(response) > self.MAX_DATA_URI:
+            return f"[data URI omitted, {len(response)} characters]"
         if response is None or isinstance(response, (str, int, float, bool)):
             return response
         if isinstance(response, (datetime.datetime, datetime.date)):
