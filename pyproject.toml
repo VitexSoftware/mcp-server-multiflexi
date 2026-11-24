@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "multiflexi-mcp-server"
-version = "0.3.6"
+version = "0.3.7"
 description = "MCP Server for MultiFlexi API integration"
 authors = [
     { name = "CyberVitexus", email = "info@vitexsoftware.cz" }

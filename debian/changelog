@@ -1,7 +1,9 @@
-mcp-server-multiflexi (0.3.6-1) unstable; urgency=medium
+mcp-server-multiflexi (0.3.7-1) unstable; urgency=medium
 
   * New tools list_jobs (status / RunTemplate filter, paging) and
     list_runtemplates; failed jobs could not be found through tools before.
+  * create_job returns the created job id (was null); inline logos are left
+    out of results (list_companies was 443 kB).
   * Install the launcher as /usr/bin/mcp-server-multiflexi; the old
     multiflexi-mcp-server name stays as a second console script.
   * mcprack companion registers the new launcher name.

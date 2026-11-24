@@ -181,15 +181,15 @@ class TestMultiFleXiClient:
         mock_api_client_class.return_value.__enter__.return_value = mock_api_client
 
         mock_job_api = Mock()
-        mock_response = Mock()
-        mock_response.to_dict.return_value = {"id": 42, "runtemplate_id": 1}
-        mock_job_api.setjob_by_id.return_value = mock_response
+        mock_response = Mock(status=200)
+        mock_response.read.return_value = b'{"job_id": 42, "runtemplate_id": 1}'
+        mock_job_api.setjob_by_id_without_preload_content.return_value = mock_response
 
         with patch('multiflexi_client.JobApi', return_value=mock_job_api):
             result = client.create_job(runtemplate_id=1, scheduled="now", env={"FOO": "bar"})
 
-        assert result == {"id": 42, "runtemplate_id": 1}
-        call_args = mock_job_api.setjob_by_id.call_args
+        assert result == {"job_id": 42, "runtemplate_id": 1}
+        call_args = mock_job_api.setjob_by_id_without_preload_content.call_args
         request = call_args.args[0]
         assert request.runtemplate_id == 1
         assert request.scheduled == "now"
@@ -202,7 +202,9 @@ class TestMultiFleXiClient:
         mock_api_client_class.return_value.__enter__.return_value = mock_api_client
 
         mock_job_api = Mock()
-        mock_job_api.setjob_by_id.side_effect = ApiException(status=404, reason="Not Found")
+        mock_response = Mock(status=404, reason="Not Found")
+        mock_response.read.return_value = b'{"message": "RunTemplate not found"}'
+        mock_job_api.setjob_by_id_without_preload_content.return_value = mock_response
 
         with patch('multiflexi_client.JobApi', return_value=mock_job_api):
             result = client.create_job(runtemplate_id=999)

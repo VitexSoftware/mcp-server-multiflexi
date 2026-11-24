@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime
+import json
 import logging
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
@@ -257,8 +258,16 @@ class MultiFleXiClient:
                     executor=executor,
                     env=env,
                 )
-                result = api_instance.setjob_by_id(request)
-                return self.format_response(result)
+                # The server answers 200 with {"job_id": ...} while the OpenAPI spec
+                # declares 201 + Job, so the generated setjob_by_id() yields None.
+                # Read the body directly to always confirm the created job.
+                raw = api_instance.setjob_by_id_without_preload_content(request)
+                body = raw.read()
+                if not 200 <= raw.status < 300:
+                    raise ApiException(
+                        status=raw.status, reason=raw.reason, body=body.decode("utf-8", "replace")
+                    )
+                return json.loads(body)
         except ApiException as e:
             return self.handle_api_error(e, "create_job")
 
