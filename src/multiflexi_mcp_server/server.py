@@ -840,6 +840,44 @@ async def list_tools() -> List[Tool]:
                 "required": ["event_rule_id"]
             }
         ),
+        # Job / RunTemplate listing
+        Tool(
+            name="list_jobs",
+            title="List Jobs",
+            annotations=READ_ONLY_ANNOTATIONS,
+            description="List jobs, newest first, without their output; use get_job for stdout/stderr",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "description": "Return only jobs in this state",
+                        "enum": ["scheduled", "running", "success", "failed"]
+                    },
+                    "runtemplate_id": {"type": "integer", "description": "Return only jobs of this RunTemplate"},
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum number of results",
+                        "minimum": 1,
+                        "maximum": 100,
+                        "default": 20
+                    },
+                    "offset": {"type": "integer", "description": "Number of recent jobs to skip", "minimum": 0}
+                }
+            }
+        ),
+        Tool(
+            name="list_runtemplates",
+            title="List RunTemplates",
+            annotations=READ_ONLY_ANNOTATIONS,
+            description="List run templates",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "limit": {"type": "integer", "description": "Maximum number of results"}
+                }
+            }
+        ),
         # Task
         Tool(
             name="list_tasks",
@@ -898,6 +936,17 @@ async def call_tool(name: str, arguments: Dict[str, Any]) -> List[TextContent]:
             format_type = arguments.get("format", "json")
             result = client.get_job_by_id(job_id, format_type)
             
+        elif name == "list_jobs":
+            result = client.list_jobs(
+                status=arguments.get("status"),
+                runtemplate_id=arguments.get("runtemplate_id"),
+                limit=arguments.get("limit", 20),
+                offset=arguments.get("offset", 0),
+            )
+
+        elif name == "list_runtemplates":
+            result = client.get_runtemplates(limit=arguments.get("limit"))
+
         elif name == "create_job":
             result = client.create_job(
                 runtemplate_id=arguments["runtemplate_id"],

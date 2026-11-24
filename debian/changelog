@@ -1,3 +1,14 @@
+mcp-server-multiflexi (0.3.6-1) unstable; urgency=medium
+
+  * New tools list_jobs (status / RunTemplate filter, paging) and
+    list_runtemplates; failed jobs could not be found through tools before.
+  * Install the launcher as /usr/bin/mcp-server-multiflexi; the old
+    multiflexi-mcp-server name stays as a second console script.
+  * mcprack companion registers the new launcher name.
+  * debian/Jenkinsfile: one workspace per branch.
+
+ -- Vítězslav Dvořák <info@vitexsoftware.cz>  Tue, 24 Nov 2026 12:20:00 +0100
+
 mcp-server-multiflexi (0.3.5-1) unstable; urgency=medium
 
   * Build configuration and API client lazily: importing the server no longer

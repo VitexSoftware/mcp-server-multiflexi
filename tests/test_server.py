@@ -114,7 +114,7 @@ class TestMCPServer:
         """Test tool listing."""
         tools = await list_tools()
 
-        assert len(tools) == 37
+        assert len(tools) == 39
         tool_names = [t.name for t in tools]
 
         expected_tools = [
@@ -130,6 +130,7 @@ class TestMCPServer:
             "set_event_source", "delete_event_source", "test_event_source_connection",
             "list_event_rules", "get_event_rule", "set_event_rule",
             "delete_event_rule", "list_tasks", "get_task",
+            "list_jobs", "list_runtemplates",
         ]
 
         for tool_name in expected_tools:

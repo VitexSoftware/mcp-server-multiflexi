@@ -162,6 +162,59 @@ class MultiFleXiClient:
         except ApiException as e:
             return self.handle_api_error(e, "get_jobs")
 
+    # Upper bound on jobs inspected by one filtered list_jobs() call.
+    LIST_JOBS_SCAN_LIMIT = 2000
+
+    def list_jobs(
+        self,
+        status: Optional[str] = None,
+        runtemplate_id: Optional[int] = None,
+        limit: int = 20,
+        offset: int = 0,
+    ) -> Any:
+        """List jobs newest first, filtered client-side (the API has no job filters).
+
+        Large fields (``env``, output) are left out; ``get_job`` returns them.
+        """
+        import multiflexi_client
+        from multiflexi_client.rest import ApiException
+        page_size = 100
+        wanted: List[Dict[str, Any]] = []
+        scanned = 0
+        exhausted = False
+        try:
+            with self.get_api_client() as api_client:
+                api_instance = multiflexi_client.JobApi(api_client)
+                while len(wanted) < limit and scanned < self.LIST_JOBS_SCAN_LIMIT:
+                    page = self.format_response(
+                        api_instance.listjobs("json", limit=page_size, offset=offset + scanned)
+                    ) or {}
+                    jobs = list(page.values()) if isinstance(page, dict) else page
+                    if not jobs:
+                        exhausted = True
+                        break
+                    scanned += len(jobs)
+                    for job in sorted(jobs, key=lambda j: j.get("id") or 0, reverse=True):
+                        if runtemplate_id is not None and job.get("runtemplate_id") != runtemplate_id:
+                            continue
+                        state = self._derive_job_status(job)
+                        if status is not None and state != status:
+                            continue
+                        row = {k: v for k, v in job.items() if k not in ("env", "stdout", "stderr")}
+                        row["status"] = state
+                        wanted.append(row)
+                    if len(jobs) < page_size:
+                        exhausted = True
+                        break
+                return {
+                    "jobs": wanted[:limit],
+                    "scanned": scanned,
+                    # True: every job was inspected, so a missing match really does not exist.
+                    "complete": exhausted and len(wanted) <= limit,
+                }
+        except ApiException as e:
+            return self.handle_api_error(e, "list_jobs")
+
     def get_job_by_id(self, job_id: int, format_type: str = "json", limit: Optional[int] = None) -> Dict[str, Any]:
         """Get job by ID."""
         import multiflexi_client

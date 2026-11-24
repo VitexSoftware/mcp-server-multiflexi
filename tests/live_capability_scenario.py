@@ -335,6 +335,8 @@ async def run_scenario(
         ("list_event_sources", lambda: {"limit": 5}),
         ("list_event_rules", lambda: {"limit": 5}),
         ("list_tasks", lambda: {"limit": 5}),
+        ("list_jobs", lambda: {"limit": 5}),
+        ("list_runtemplates", lambda: {"limit": 5}),
     ]
 
     get_tool_cases: List[Tuple[str, Callable[[], Dict[str, Any]], Callable[[], Optional[str]]]] = [

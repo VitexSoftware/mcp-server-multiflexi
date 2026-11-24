@@ -313,13 +313,6 @@ class TestMultiFleXiClientNewDomains:
         assert result == {"id": 7, "name": "FioToken"}
         mock_cred_api.get_credential.assert_called_once_with("", 7, "json")
 
-    @pytest.mark.xfail(
-        reason="generated multiflexi_client lacks UpdateCredentialsRequest "
-        "(php-vitexsoftware-multiflexi-server OpenAPI client gap, pre-existing "
-        "and unrelated to this package)",
-        raises=AttributeError,
-        strict=True,
-    )
     @patch('multiflexi_client.ApiClient')
     def test_update_credential(self, mock_api_client_class, client):
         mock_api_client_class.return_value.__enter__.return_value = MagicMock()
@@ -337,13 +330,6 @@ class TestMultiFleXiClientNewDomains:
         assert args[1] == 7
         assert args[3].name == "Renamed"
 
-    @pytest.mark.xfail(
-        reason="generated multiflexi_client lacks UpdateCredentialTypeRequest "
-        "(php-vitexsoftware-multiflexi-server OpenAPI client gap, pre-existing "
-        "and unrelated to this package)",
-        raises=AttributeError,
-        strict=True,
-    )
     @patch('multiflexi_client.ApiClient')
     def test_update_credential_type(self, mock_api_client_class, client):
         mock_api_client_class.return_value.__enter__.return_value = MagicMock()
@@ -360,13 +346,6 @@ class TestMultiFleXiClientNewDomains:
         assert args[0] == 3
         assert args[2].name == "FioBank"
 
-    @pytest.mark.xfail(
-        reason="generated multiflexi_client lacks UpdateTopicRequest "
-        "(php-vitexsoftware-multiflexi-server OpenAPI client gap, pre-existing "
-        "and unrelated to this package)",
-        raises=AttributeError,
-        strict=True,
-    )
     @patch('multiflexi_client.ApiClient')
     def test_update_topic(self, mock_api_client_class, client):
         mock_api_client_class.return_value.__enter__.return_value = MagicMock()
@@ -434,6 +413,27 @@ class TestMultiFleXiClientNewDomains:
             result = client.delete_event_rule(4)
 
         assert result == {"success": True, "event_rule_id": 4}
+
+    @patch('multiflexi_client.ApiClient')
+    def test_list_jobs_filters_pages_and_strips_large_fields(self, mock_api_client_class, client):
+        mock_api_client_class.return_value.__enter__.return_value = MagicMock()
+        jobs = [
+            {"id": i, "runtemplate_id": 34 if i % 2 else 1, "begin": "2026-11-24", "end": "2026-11-24",
+             "exitcode": 1 if i % 2 else 0, "env": "secret", "stdout": "x"}
+            for i in range(250, 0, -1)
+        ]
+        api = Mock()
+        api.listjobs.side_effect = lambda fmt, limit, offset: {
+            str(j["id"]): j for j in jobs[offset:offset + limit]
+        }
+
+        with patch('multiflexi_client.JobApi', return_value=api):
+            result = client.list_jobs(status="failed", runtemplate_id=34, limit=110)
+            everything = client.list_jobs(status="success", limit=500)
+
+        assert [j["id"] for j in result["jobs"]] == list(range(249, 30, -2))
+        assert all(j["status"] == "failed" and "env" not in j and "stdout" not in j for j in result["jobs"])
+        assert len(everything["jobs"]) == 125 and everything["complete"] is True
 
     @patch('multiflexi_client.ApiClient')
     def test_list_tasks_with_filters(self, mock_api_client_class, client):

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "multiflexi-mcp-server"
-version = "0.3.1"
+version = "0.3.6"
 description = "MCP Server for MultiFlexi API integration"
 authors = [
     { name = "CyberVitexus", email = "info@vitexsoftware.cz" }
@@ -55,6 +55,7 @@ Issues = "https://github.com/VitexSoftware/multiflexi-mcp-server/issues"
 Changelog = "https://github.com/VitexSoftware/multiflexi-mcp-server/blob/main/CHANGELOG.md"
 
 [project.scripts]
+mcp-server-multiflexi = "multiflexi_mcp_server.server:main"
 multiflexi-mcp-server = "multiflexi_mcp_server.server:main"
 
 [tool.setuptools.packages.find]
